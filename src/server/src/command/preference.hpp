@@ -4,6 +4,7 @@
 #include <qnamespace.h>
 #include <qstring.h>
 #include <variant>
+#include "ui/image/url.hpp"
 
 class Preference {
 public:
@@ -28,9 +29,16 @@ public:
     struct Option {
       QString title;
       QString value;
+      std::optional<ImageURL> icon;
+    };
+
+    struct Section {
+      QString title;
+      std::vector<Option> options;
     };
 
     std::vector<Option> options;
+    std::vector<Section> sections;
   };
 
 private:
@@ -54,7 +62,10 @@ public:
   static Preference makeText(const QString &id) { return {id, TextData{}}; }
   static Preference makePassword(const QString &id) { return {id, PasswordData{}}; }
   static Preference makeDropdown(const QString &id, const std::vector<DropdownData::Option> &options = {}) {
-    return {id, DropdownData{options}};
+    return {id, DropdownData{.options = options}};
+  }
+  static Preference makeDropdown(const QString &id, const std::vector<DropdownData::Section> &sections) {
+    return {id, DropdownData{.sections = sections}};
   }
   static Preference file(const QString &id) { return {id, FilePickerData()}; }
   static Preference files(const QString &id) { return {id, FilePickerData{.multiple = true}}; }
